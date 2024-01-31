@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class BusTopApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BusTopApplication.class, args);
+        for (int i = 0; i < 5; i++) {
+            System.out.println(i);
+        }
     }
 
 }
