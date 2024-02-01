@@ -23,3 +23,42 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+
+// macOS에서 npm을 실행하기 위한 명령어
+def npmCommand = System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('mac') ? 'npm' : 'npm.cmd'
+
+// React 프로젝트 디렉토리
+def frontendDir = "$projectDir/src/main/reactfront"
+
+// main 리소스 디렉토리 설정
+sourceSets {
+    main {
+        resources { srcDirs = ["$projectDir/src/main/resources"] }
+    }
+}
+
+// installReact 작업
+task installReact(type: Exec) {
+    workingDir "$frontendDir"
+    inputs.dir "$frontendDir"
+    group = BasePlugin.BUILD_GROUP
+    commandLine npmCommand, "audit", "fix"
+    commandLine npmCommand, 'install'
+}
+
+// buildReact 작업
+task buildReact(type: Exec) {
+    dependsOn "installReact"
+    workingDir "$frontendDir"
+    inputs.dir "$frontendDir"
+    group = BasePlugin.BUILD_GROUP
+    commandLine npmCommand, "run-script", "build"
+}
+
+// copyReactBuildFiles 작업
+task copyReactBuildFiles(type: Copy) {
+    dependsOn "buildReact"
+    from "$frontendDir/build"
+    into "$projectDir/src/main/resources/static"
+}
